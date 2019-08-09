@@ -1,9 +1,9 @@
 <?php
 
-    require_once ("DatabaseManager.php");
+    require_once ("WitsFreelanceDatabaseManager.php");
 
-    $stmt = "INSERT INTO WF_FUND(:ID, :AM)";
-    $args = array(":ID" => 1627982, ":AM" => 30000);
+    $stmt = "INSERT INTO WF_FUND VALUES(:ID, :AM)";
+    $args = array("ID" => 1627982, "AM" => 30000);
 
-    $databaseManager = new DatabaseManager();
-    $databaseManager -> executeStatement($stmt, $args);
+    $db = new WitsFreelanceDatabaseManager();
+    $db -> insert($stmt, $args);

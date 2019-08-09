@@ -1,7 +1,9 @@
 <?php
 require_once ("ServerInfo.php");
 require_once ("Constants.php");
+require_once ("BusinessManager.php");
 
+//1627982.ms.wits.ac.za/~student/auth.php?USERNAME=1627982&PASSWORD=mulisa6854727
 function authenticate($user, $password) {
     $ldap = ldap_connect(ServerInfo::LDAP_HOST);
     ldap_set_option($ldap,LDAP_OPT_PROTOCOL_VERSION,3);
@@ -17,6 +19,9 @@ function authenticate($user, $password) {
             Constants::NAME => $entry[ServerInfo::LDAP_ATTR[2]][0],
             Constants::SURNAME => $entry[ServerInfo::LDAP_ATTR[1]][0]
         );
+
+        $bm = new BusinessManager();
+        $bm -> performTransaction($user, 0, "initial amount");
 
         echo json_encode($info);
     }
