@@ -42,32 +42,67 @@
             break;
 
         case Constants::VIEW_ALL:
-            /*$stmt = "SELECT :JID, :JEID, :JT, :JD, :JPDT, :JARL, :JARH, :JDDT, :JL, :JC, COUNT(:BID) AS :N
-            FROM :T1 INNER JOIN :T2 ON :T1.:JID = :T2.:JID WHERE :JS = :JSC GROUP BY :JID";*/
-            $stmt = "SELECT :JID, :JEID, :JT, :JD, :JPDT, :JARL, :JARH, :JDDT, :JL, :JC, COUNT(:BID) AS NUM_OF_BIDS FROM "
-                .Constants::JOB_TABLE." INNER JOIN ".Constants::BID_TABLE." ON "
-                .Constants::JOB_TABLE.".".Constants::JOB_ID." = "
-                .Constants::BID_TABLE.".".Constants::JOB_ID." WHERE "
-                .Constants::JOB_STATUS." = ".Constants::OPEN." GROUP BY "
-                .Constants::JOB_ID;
-            $args = array(
-                "JID" => Constants::JOB_ID,
-                "JEID" => Constants::JOB_EMPLOYER_ID,
-                "JT" => Constants::JOB_TITLE,
-                "JD" => Constants::JOB_DESCRIPTION,
-                "JPDT" => Constants::JOB_POST_DATE_TIME,
-                "JARL" => Constants::JOB_AMOUNT_RANGE_LOW,
-                "JARH" => Constants::JOB_AMOUNT_RANGE_HIGH,
-                "JS" => Constants::JOB_STATUS,
-                "JSC" => Constants::OPEN,
-                "JDDT" => Constants::JOB_DUE_DATE_TIME,
-                "JL" => Constants::JOB_LOCATION,
-                "JC" => Constants::JOB_CATEGORY,
-                "BID" => Constants::BID_ID,
-                "N" => "NUM_OF_BID",
-                "T1" => Constants::JOB_TABLE,
-                "T2" => Constants::BID_TABLE
-            );
-            $db -> fetch($stmt, $args);
+            $stmt = "SELECT * FROM ".Constants::JOB_TABLE;
+            $execStmt = $db -> getPdo() -> prepare($stmt);
+            if ($execStmt -> execute(array())){
+                $results = array();
+
+                while ($row = $execStmt -> fetch(PDO::FETCH_ASSOC)){
+                    $jobId = $row[Constants::JOB_ID];
+                    $stmt = "SELECT COUNT(*) AS NUM_OF_BIDS FROM ".Constants::BID_TABLE." WHERE ".Constants::JOB_ID." = :ID";
+                    $stmt = $db -> getPdo() -> prepare($stmt);
+                    if ($stmt -> execute(array("ID" => $jobId))){
+                        $row["NUM_OF_BIDS"] = $stmt -> fetch(PDO::FETCH_ASSOC)["NUM_OF_BIDS"];
+                    }
+                    else{
+                        $row["NUM_OF_BIDS"] = 0;
+                    }
+                    $results[] = $row;
+                }
+                echo json_encode($results);
+            }
+            else echo json_encode(Constants::DEFAULT_JSON);
+
             break;
     }
+    /*
+     * function fetchAllActvities($stmt, $args, $userId){
+	try{
+	    $execStmt = $this -> pdo -> prepare($stmt, $args);
+	    if($execStmt -> execute($args)){
+		$output = array();
+		while($row = $execStmt -> fetch(PDO::FETCH_ASSOC)){
+			$activity_id = $row["activity_id"];
+			$numLikesStmt = "SELECT COUNT(*) AS num_likes FROM STUD_LIKE_DISLIKE WHERE activity_id = :AI AND stud_like_dislike = 0";
+			$numDislikesStmt = "SELECT COUNT(*) AS num_dislikes FROM STUD_LIKE_DISLIKE WHERE activity_id = :AI AND stud_like_dislike = 1";
+			$numCommentsStmt = "SELECT COUNT(*) AS num_comments FROM STUD_COMMENT WHERE activity_id = :AI";
+			$likeStatusStmt = "SELECT * FROM STUD_LIKE_DISLIKE WHERE activity_id = :AI AND student_id = :UI AND stud_like_dislike = 0";
+			$dislikeStatusStmt = "SELECT * FROM STUD_LIKE_DISLIKE WHERE activity_id = :AI AND student_id = :UI AND stud_like_dislike = 1";
+
+			$args = array(":AI" => $activity_id);
+			$sttsArgs = array(":AI" => $activity_id, ":UI" => $userId);
+
+			$execLikeStmt = $this -> pdo -> prepare($numLikesStmt);
+			$execDisLikeStmt = $this -> pdo -> prepare($numDislikesStmt);
+			$execCommentsStmt = $this -> pdo -> prepare($numCommentsStmt);
+
+			if($execLikeStmt -> execute($args)) $row["num_likes"] = $execLikeStmt -> fetch(PDO::FETCH_ASSOC)["num_likes"];
+			if($execDisLikeStmt -> execute($args)) $row["num_dislikes"] = $execDisLikeStmt -> fetch(PDO::FETCH_ASSOC)["num_dislikes"];
+			if($execCommentsStmt -> execute($args)) $row["num_comments"] = $execCommentsStmt -> fetch(PDO::FETCH_ASSOC)["num_comments"];
+
+			$row["like_status"] = -1;
+			if($this -> exists($likeStatusStmt, $sttsArgs)) $row["like_status"] = 0;
+			if($this -> exists($dislikeStatusStmt, $sttsArgs)) $row["like_status"] = 1;
+
+			$output[] = $row;
+		}
+		usort($output, function($a, $b){return $a["num_likes"] < $b["num_likes"];});
+		echo json_encode($output);
+	    }
+	    else echo Constants::DEFAULT_JSON;
+	}
+        catch(PDOException $e){
+		echo Constants::DEFAULT_JSON;
+	}
+    }
+    */

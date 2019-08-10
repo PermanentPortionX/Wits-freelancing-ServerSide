@@ -49,16 +49,12 @@ class WitsFreelanceDatabaseManager {
         }
     }
 
-    function executeFetchStatement($stmt, $args){
-        try{
-            $execStmt = $this -> pdo -> prepare($stmt);
-            if ($execStmt -> execute($args)) echo json_encode($execStmt -> fetchAll());
-            else echo Constants::DEFAULT_JSON;
-
-        }
-        catch (PDOException $e){
-            echo $e -> getMessage();
-        }
+    /**
+     * @return PDO
+     */
+    public function getPdo()
+    {
+        return $this->pdo;
     }
 
     /*function fetchAllActvities($stmt, $args, $userId){
