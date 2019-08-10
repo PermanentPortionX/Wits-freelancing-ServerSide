@@ -80,7 +80,7 @@ class BusinessManager{
             $stmt = "INSERT INTO ".Constants::TRANSACTION_TABLE." VALUES(0, :TDT, :TR, :TA, :FSI)";
             $execStmt = $this -> pdo -> prepare($stmt);
             $args = array(
-                "TDT" => date('d/m/Y_H:i'),
+                "TDT" => date(Constants::DATE_TIME_FORMAT),
                 "TR" => $reason,
                 "TA" => $amount,
                 "FSI" => $id

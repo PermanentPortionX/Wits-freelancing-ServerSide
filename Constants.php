@@ -5,6 +5,8 @@ class Constants {
     const ACTION = "ACTION";
 
     const DEFAULT_JSON = "{}";
+    const DEFAULT_JSON_ARRAY = "[]";
+    const DATE_TIME_FORMAT = "d_m_Y_H:i";
 
     //return codes
     const FAILED = 0;

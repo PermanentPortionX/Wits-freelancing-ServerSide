@@ -13,7 +13,7 @@
             $args = array(
                 "JID" => $_REQUEST[Constants::JOB_ID],
                 "BID" => $_REQUEST[Constants::BIDDER_ID],
-                "BDT" => date('d/m/Y_H:i'),
+                "BDT" => date(Constants::DATE_TIME_FORMAT),
                 "BSA" => $_REQUEST[Constants::BID_SUGGESTED_AMOUNT],
                 "BM" => $_REQUEST[Constants::BID_MESSAGE]
             );

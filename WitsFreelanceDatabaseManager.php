@@ -42,7 +42,7 @@ class WitsFreelanceDatabaseManager {
     function fetch($stmt, $args){
         try{
             $execStmt = $this -> pdo -> prepare($stmt);
-            echo json_encode(($execStmt -> execute($args)) ? $execStmt -> fetchAll(): Constants::DEFAULT_JSON);
+            echo json_encode(($execStmt -> execute($args)) ? $execStmt -> fetchAll(): Constants::DEFAULT_JSON_ARRAY);
         }
         catch (PDOException $e){
             echo $e -> getMessage();

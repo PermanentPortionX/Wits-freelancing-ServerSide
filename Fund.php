@@ -11,7 +11,6 @@
     $db = new WitsFreelanceDatabaseManager();
     $bm = new BusinessManager();
     $ACTION = $_REQUEST[Constants::ACTION];
-
     $id = $_REQUEST[Constants::FUND_STUD_ID];
 
     switch ($ACTION){
@@ -24,6 +23,26 @@
 
         case Constants::VIEW_SINGLE:
             $stmt = "SELECT * FROM ".Constants::FUND_TABLE." WHERE ".Constants::FUND_STUD_ID." = :ID";
-            $db -> fetch($stmt, array("ID" => $id));
+            $stmt = $db -> getPdo() -> prepare($stmt);
+            if ($stmt -> execute(array("ID" => $id))){
+                $row = $stmt -> fetch(PDO::FETCH_ASSOC);
+
+                $results = array();
+                $results[] = $row;
+
+                $stmt = "SELECT * FROM ".Constants::TRANSACTION_TABLE." WHERE ".Constants::FUND_STUD_ID." = :ID ORDER BY "
+                    .Constants::TRANSACTION_ID." DESC";
+                $stmt = $db -> getPdo() -> prepare($stmt);
+
+                if ($stmt -> execute(array("ID" => $id))){
+                    while ($row = $stmt -> fetch(PDO::FETCH_ASSOC)) $results[] = $row;
+                }
+
+                echo json_encode($results);
+
+            }
+            else echo json_encode(Constants::DEFAULT_JSON_ARRAY);
+
+            //$db -> fetch($stmt, array("ID" => $id));
             break;
     }
