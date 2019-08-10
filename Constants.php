@@ -23,6 +23,7 @@ class Constants {
     //ACTIONS
     const POST = 0;
     const VIEW_ALL = 1;
+    const VIEW_SINGLE = 2;
 
     //business
     const POST_COST = 0.1;

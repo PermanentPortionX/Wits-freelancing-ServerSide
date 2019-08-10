@@ -54,7 +54,9 @@ class BusinessManager{
                     //load funds
                     $stmt = "INSERT INTO ".Constants::FUND_TABLE." VALUES(:ID, :A)";
                     $execStmt = $this -> pdo -> prepare($stmt);
-                    if($execStmt -> execute(array("ID" => $id, "A" => $amount))) $this->logTransaction($id, $amount, $reason);
+                    if($execStmt -> execute(array("ID" => $id, "A" => $amount))) {
+                        $this->logTransaction($id, $amount, $reason);
+                    }
                 }
                 else if ($amount != 0){
                     //update

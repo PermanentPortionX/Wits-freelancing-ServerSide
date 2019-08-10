@@ -42,8 +42,14 @@
             break;
 
         case Constants::VIEW_ALL:
-            $stmt = "SELECT :JID, :JEID, :JT, :JD, :JPDT, :JARL, :JARH, :JDDT, :JL, :JC, COUNT(:BID) AS :N 
-            FROM :T1 INNER JOIN :T2 ON :T1.:JID = :T2.:JID WHERE :JS = :JSC GROUP BY :JID";
+            /*$stmt = "SELECT :JID, :JEID, :JT, :JD, :JPDT, :JARL, :JARH, :JDDT, :JL, :JC, COUNT(:BID) AS :N
+            FROM :T1 INNER JOIN :T2 ON :T1.:JID = :T2.:JID WHERE :JS = :JSC GROUP BY :JID";*/
+            $stmt = "SELECT :JID, :JEID, :JT, :JD, :JPDT, :JARL, :JARH, :JDDT, :JL, :JC, COUNT(:BID) AS NUM_OF_BIDS FROM "
+                .Constants::JOB_TABLE." INNER JOIN ".Constants::BID_TABLE." ON "
+                .Constants::JOB_TABLE.".".Constants::JOB_ID." = "
+                .Constants::BID_TABLE.".".Constants::JOB_ID." WHERE "
+                .Constants::JOB_STATUS." = ".Constants::OPEN." GROUP BY "
+                .Constants::JOB_ID;
             $args = array(
                 "JID" => Constants::JOB_ID,
                 "JEID" => Constants::JOB_EMPLOYER_ID,

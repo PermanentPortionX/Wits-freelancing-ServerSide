@@ -24,4 +24,9 @@
                 $db -> insert($stmt, $args, true);
             }
             break;
+
+        case Constants::VIEW_ALL:
+            $stmt = "SELECT * FROM ".Constants::BID_TABLE." WHERE ".Constants::JOB_ID." = :ID";
+            $db -> fetch($stmt, array("ID" => $_REQUEST[Constants::JOB_ID]));
+            break;
     }
