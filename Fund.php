@@ -5,6 +5,7 @@
  * Date: 2019/08/10
  * Time: 2:09 PM
  */
+    header('Access-Control-Allow-Origin: *');
     require_once ("WitsFreelanceDatabaseManager.php");
     require_once ("BusinessManager.php");
 

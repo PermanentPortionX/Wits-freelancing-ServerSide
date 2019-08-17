@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 require_once("Constants.php");
 require_once("ServerInfo.php");
 

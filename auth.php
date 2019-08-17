@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 require_once ("ServerInfo.php");
 require_once ("Constants.php");
 require_once ("BusinessManager.php");
@@ -20,6 +21,7 @@ function authenticate($user, $password) {
             Constants::SURNAME => $entry[ServerInfo::LDAP_ATTR[1]][0]
         );
 
+        //mail("1627982@students.wits.ac.za", "subject", "message", "WitsFreeLance");
         $bm = new BusinessManager();
         $bm -> performTransaction($user, 0, "initial amount");
 
