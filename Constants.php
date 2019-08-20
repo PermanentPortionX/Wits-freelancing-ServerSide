@@ -1,6 +1,5 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-
 class Constants {
     //project
     const ACTION = "ACTION";
