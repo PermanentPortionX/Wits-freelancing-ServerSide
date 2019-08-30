@@ -26,6 +26,12 @@ class Constants {
     const POST = 0;
     const VIEW_ALL = 1;
     const VIEW_SINGLE = 2;
+    const ASSIGN_JOB = 3;
+    const PAY = 4;
+    const JOB_COMPLETE = 5;
+    const VIEW_MY_JOBS = 6;
+    const VIEW_MY_OFFERED_JOBS = 7;
+    const MAKE_COMPLAINT = 8;
 
     //business
     const POST_COST = 0.1;
@@ -65,8 +71,16 @@ class Constants {
     const BID_SUGGESTED_AMOUNT = "BID_SUGGESTED_AMOUNT";
     const BID_MESSAGE = "BID_MESSAGE";
 
+    //COMPLAINTS
+    const COMPLAINT_TABLE = "WF_COMPLAINTS";
+    const COMPLAINT_ID = "COMPLAINT_ID";
+    const COMPLAINT_TYPE = "COMPLAINT_TYPE";
+    const COMPLAINT_DATE_TIME = "COMPLAINT_DATE_TIME";
+    const COMPLAINT_MESSAGE = "COMPLAINT_MESSAGE";
+
     //JOB STATUS CODES
     const OPEN = 0;
-    const COMPLETE = 1;
-    const ASSIGNED = 2;
+    const ASSIGNED = 1;
+    const COMPLETE = 2;
+    const PAID = 3;
 }

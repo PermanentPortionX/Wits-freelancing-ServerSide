@@ -58,6 +58,7 @@ class BusinessManager{
                     if($execStmt -> execute(array("ID" => $id, "A" => $amount))) {
                         $this->logTransaction($id, $amount, $reason);
                     }
+                    //TODO: SEND NOTIFICATION
                 }
                 else if ($amount != 0){
                     //update
@@ -65,8 +66,9 @@ class BusinessManager{
                         " + :A WHERE ".Constants::FUND_STUD_ID." = :ID";
                     $execStmt = $this -> pdo -> prepare($stmt);
                     if($execStmt -> execute(array("A" => $amount, "ID" => $id))){
-                        return $this->logTransaction($id, $amount, $reason);
+                        return $this -> logTransaction($id, $amount, $reason);
                     }
+                    //TODO: SEND NOTIFICATION
                 }
             }
         }

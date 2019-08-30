@@ -27,7 +27,7 @@ class WitsFreelanceDatabaseManager {
         $this -> pdo = null;
     }
 
-    function insert($stmt, $args, $provideFeedback){
+    function execute($stmt, $args, $provideFeedback){
         try{
             $execStmt = $this -> pdo -> prepare($stmt);
             $execStmt -> execute($args);

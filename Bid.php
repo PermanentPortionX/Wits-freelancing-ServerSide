@@ -18,10 +18,14 @@
                 "BM" => $_REQUEST[Constants::BID_MESSAGE]
             );
 
+            //prevent bidding on own job
+            $checkStmt = "SELECT * FROM ".Constants::JOB_TABLE." WHERE ".Constants::JOB_ID." = :JID AND ".Constants::JOB_EMPLOYER_ID." = :BID";
+            if ($db -> exists($checkStmt, $args)) return;
+
             if ($db -> exists($stmt, array($args["JID"], $args["BID"]))) echo Constants::ALREADY_BID;
             else{
                 $stmt = "INSERT INTO ".Constants::BID_TABLE." VALUES(0, :JID, :BID, :BDT, :BSA, :BM)";
-                $db -> insert($stmt, $args, true);
+                $db -> execute($stmt, $args, true);
             }
 
             break;
