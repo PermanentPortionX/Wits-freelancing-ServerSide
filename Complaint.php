@@ -12,12 +12,12 @@ $db = new WitsFreelanceDatabaseManager();
 $ACTION = $_REQUEST[Constants::ACTION];
 
 switch ($ACTION){
-    case Constants::MAKE_COMPLAINT:
+    case Constants::POST:
         $stmt = "INSERT INTO ".Constants::COMPLAINT_TABLE." VALUES(0, :JID, :CT, :CDT, :CM)";
         $args = array(
             "JID" => $_REQUEST[Constants::JOB_ID],
             "CT" => $_REQUEST[Constants::COMPLAINT_TYPE],
-            "CDT" => $_REQUEST[Constants::COMPLAINT_DATE_TIME],
+            "CDT" => date(Constants::DATE_TIME_FORMAT),
             "CM" => $_REQUEST[Constants::COMPLAINT_MESSAGE]
         );
 

@@ -2,7 +2,7 @@
 header('Access-Control-Allow-Origin: *');
 require_once ("ServerInfo.php");
 require_once ("Constants.php");
-require_once ("BusinessManager.php");
+require_once("BusinessManager.php");
 
 //1627982.ms.wits.ac.za/~student/auth.php?USERNAME=1627982&PASSWORD=mulisa6854727
 function authenticate($user, $password) {

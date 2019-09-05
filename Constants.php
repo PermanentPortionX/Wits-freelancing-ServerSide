@@ -31,7 +31,6 @@ class Constants {
     const JOB_COMPLETE = 5;
     const VIEW_MY_JOBS = 6;
     const VIEW_MY_OFFERED_JOBS = 7;
-    const MAKE_COMPLAINT = 8;
 
     //business
     const POST_COST = 0.1;

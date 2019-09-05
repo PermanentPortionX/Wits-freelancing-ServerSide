@@ -7,7 +7,7 @@
  */
     header('Access-Control-Allow-Origin: *');
     require_once("WitsFreelanceDatabaseManager.php");
-    require_once ("BusinessManager.php");
+    require_once("BusinessManager.php");
 
     $db = new WitsFreelanceDatabaseManager();
     $bm = new BusinessManager();
