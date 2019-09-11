@@ -2,9 +2,12 @@
     header('Access-Control-Allow-Origin: *');
     require_once("WitsFreelanceDatabaseManager.php");
     require_once("BusinessManager.php");
+    require_once("NotificationManager.php");
 
     $db = new WitsFreelanceDatabaseManager();
     $bm = new BusinessManager();
+    $nm = new NotificationManager();
+
     $ACTION = $_REQUEST[Constants::ACTION];
 
     switch ($ACTION){
@@ -32,7 +35,7 @@
                 $jobId = $db -> execute($stmt, $args, true);
 
                 $transactionId = $bm -> performTransaction($args["JEI"], -1*$args["JARH"],"Reserved for job post");
-                $bm -> performTransaction($args["JEI"], -1 * $args["JARH"] * Constants::POST_COST, "Job Post fee");
+                $bm -> performTransaction($args["JEI"], -1 * $args["JARH"] * Constants::TRANSACTION_FEE, "Job Post fee");
 
                 $stmt = "UPDATE ".Constants::JOB_TABLE." SET ".Constants::TRANSACTION_ID." = :TID WHERE ".Constants::JOB_ID." = :JID";
                 $args = array("TID" => $transactionId, "JID" => $jobId);
@@ -71,8 +74,18 @@
                 ." = :EID WHERE ".Constants::JOB_ID." = :JID";
             $stmt = $db -> getPdo() -> prepare($stmt);
             $recipientId = $_REQUEST[Constants::JOB_EMPLOYEE_ID];
-            if($stmt -> execute(array("EID" => $recipientId, "JID" => $_REQUEST[Constants::JOB_ID]))){
+            $jobId = $_REQUEST[Constants::JOB_ID];
+            if($stmt -> execute(array("EID" => $recipientId, "JID" => $jobId))){
+                //retrieve job title
+                $fetchJob = "SELECT ".Constants::JOB_TITLE." FROM ".Constants::JOB_TABLE." WHERE ".Constants::JOB_ID." = ".$jobId;
+                $fetchJob = $db -> getPdo() -> prepare($fetchJob);
+                $fetchJob -> execute(array());
+                $jobTitle = $fetchJob -> fetch(PDO::FETCH_ASSOC)[Constants::JOB_TITLE];
+
                 //TODO: send notification to recipient
+                $message = "Dear ".$recipientId.", We are glad to notify you that the job titled \"".$jobTitle."\" that you bidded for, has been assigned to you";
+                $nm -> sendNotification($recipientId, $message, "Job bid successful");
+
                 echo Constants::SUCCESS;
             }
             else echo Constants::FAILED;
@@ -93,6 +106,7 @@
                     $employerId = $returnedRow[Constants::JOB_EMPLOYER_ID];
                     $employerAmount = $returnedRow[Constants::JOB_AMOUNT_RANGE_HIGH];
 
+
                     $stmt = "SELECT ".Constants::BID_SUGGESTED_AMOUNT." FROM ".Constants::BID_TABLE." WHERE ".Constants::JOB_ID
                         ." = :JID AND ".Constants::BIDDER_ID." = :BID";
                     $args = array("JID" => $jobId, "BID" => $employeeId);
@@ -101,11 +115,17 @@
                     if ($stmt -> execute($args)){
                         $returnedRow = $stmt -> fetch(PDO::FETCH_ASSOC);
                         $employeeAmount = $returnedRow[Constants::BID_SUGGESTED_AMOUNT];
+                        $transactionFee = $employerAmount * Constants::TRANSACTION_FEE;
+                        $total = $employeeAmount - $transactionFee;
                         $employerAmount *= -1;
 
                         $reason = "Payment by ".$employerId." for job titled \"".$jobTitle."\"";
-                        if ($bm -> performTransaction($employeeId, $employeeAmount, $reason) != -1){
+                        if ($bm -> performTransaction($employeeId, $total, $reason) != -1){
+                            $transactionFee *= -1;
+                            $transReason = "Transaction fee";
+                            $bm -> performTransaction($employeeId, $total, $transReason);
                             //TODO: send notification to both users
+                            $nm -> sendReceipt($employeeId, $employeeAmount, $transactionFee, $total, $employerId, $jobTitle);
                             echo Constants::SUCCESS;
 
                             $stmt = "UPDATE ".Constants::JOB_TABLE." SET ".Constants::JOB_STATUS." = "
@@ -116,9 +136,15 @@
                             if ($employerAmount > 0){
                                 $reason = "remaining amount from job titled \"".$jobTitle."\" payment to ".$employeeId;
                                 $bm -> performTransaction($employerId, $employerAmount, $reason);
+                                $message = "Hello ".$employerId.", payment to ".$employeeId." was a success for job titled ".$jobTitle.", since the agreed salary was "
+                                    .$employeeAmount." and your highest amount you were willing to pay was ".$returnedRow[Constants::JOB_AMOUNT_RANGE_HIGH].", your change is "
+                                    .$employerAmount;
+                                $nm -> sendNotification($employerId, $message, "payment to ".$employeeId." was a success");
                             }
                             else{
                                 //TODO: send notification that payment was a success
+                                $message = "Hello ".$employerId.", payment to ".$employeeId." was a success for job titled ".$jobTitle.", total payment is ".$employeeAmount;
+                                $nm -> sendNotification($employerId, $message, "payment to ".$employeeId." was a success");
                             }
                         }
                     }
@@ -137,11 +163,15 @@
             //$db -> execute($stmt, array("JID" => $_REQUEST[Constants::JOB_ID]), true);
             $stmt = $db -> getPdo() -> prepare($stmt);
             if ($stmt -> execute($args)){
-                $stmt = "SELECT ".Constants::JOB_EMPLOYER_ID." FROM ".Constants::JOB_TABLE." WHERE ".Constants::JOB_ID." = :JID";
+                $stmt = "SELECT * FROM ".Constants::JOB_TABLE." WHERE ".Constants::JOB_ID." = :JID";
                 $stmt = $db -> getPdo() -> prepare($stmt);
                 if ($stmt -> execute($args)){
                     $row = $stmt -> fetch(PDO::FETCH_ASSOC);
                     $employerId = $row[Constants::JOB_EMPLOYER_ID];
+                    $employeeId = $row[Constants::JOB_EMPLOYEE_ID];
+                    $jobTitle = $row[Constants::JOB_TITLE];
+                    $message = "Hello ".$employerId.", this email is to notify you that ".$employeeId." has completed the job titled \"".$jobTitle;
+                    $nm -> sendNotification($employerId, $message, "Job completion");
                     //TODO: send notification to employer that job is completed
                     echo Constants::SUCCESS;
                 }
@@ -162,6 +192,4 @@
             $stmt = "SELECT * FROM ".Constants::JOB_TABLE." WHERE ".Constants::JOB_EMPLOYEE_ID." = :ID ORDER BY ".Constants::JOB_STATUS." ASC";
             $db -> fetch($stmt, array("ID" => $myId));
             break;
-
-
     }

@@ -7,6 +7,8 @@ class Constants {
     const DEFAULT_JSON = "{}";
     const DEFAULT_JSON_ARRAY = "[]";
     const DATE_TIME_FORMAT = "d_m_Y_H:i";
+    const TIME_FORMAT = "H:i";
+    const DATE_FORMAT = "d/m/Y";
 
     //return codes
     const FAILED = 0;
@@ -33,7 +35,7 @@ class Constants {
     const VIEW_MY_OFFERED_JOBS = 7;
 
     //business
-    const POST_COST = 0.1;
+    const TRANSACTION_FEE = 0.1;
 
     //Fund
     const FUND_TABLE = "WF_FUND";

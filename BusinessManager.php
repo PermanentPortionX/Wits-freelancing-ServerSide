@@ -2,11 +2,14 @@
 header('Access-Control-Allow-Origin: *');
 require_once("Constants.php");
 require_once("ServerInfo.php");
+require_once("NotificationManager.php");
 
 class BusinessManager{
     private $pdo;
+    private $nm;
 
     function __construct() {
+        $this -> nm = new NotificationManager();
         $dsn = "mysql:host=".ServerInfo::SERVER_PROXY.";dbname=".ServerInfo::DATABASE.";charset=utf8mb4";
 
         $options = [
@@ -29,7 +32,7 @@ class BusinessManager{
 
     function hasEnoughFunds($id, $amount){
         try{
-            $amount += $amount * Constants::POST_COST;
+            $amount += $amount * Constants::TRANSACTION_FEE;
             $stmt = "SELECT * FROM ".Constants::FUND_TABLE." WHERE ".Constants::FUND_STUD_ID." = :ID AND "
                 .Constants::FUND_AMOUNT." >= :AM";
             $execStmt = $this -> pdo -> prepare($stmt);
@@ -66,9 +69,16 @@ class BusinessManager{
                         " + :A WHERE ".Constants::FUND_STUD_ID." = :ID";
                     $execStmt = $this -> pdo -> prepare($stmt);
                     if($execStmt -> execute(array("A" => $amount, "ID" => $id))){
+                        //TODO: SEND NOTIFICATION
+                        $row = $execStmt -> fetch(PDO::FETCH_ASSOC);
+                        $newAmount = $row[Constants::FUND_AMOUNT];
+                        $tMessage = ($amount > 0) ? "+".$amount : $amount;
+                        $message = "A transaction took place in your account, the new amount of your account is ".$newAmount." after the transaction ".$tMessage;
+                        $this -> nm -> sendNotification($id, $message, "Transaction notification");
+                        //$this -> nm -> sendTransactionNotification($id, $amount, $newAmount, $message);
                         return $this -> logTransaction($id, $amount, $reason);
                     }
-                    //TODO: SEND NOTIFICATION
+
                 }
             }
         }
