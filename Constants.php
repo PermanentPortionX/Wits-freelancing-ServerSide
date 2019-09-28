@@ -33,6 +33,7 @@ class Constants {
     const JOB_COMPLETE = 5;
     const VIEW_MY_JOBS = 6;
     const VIEW_MY_OFFERED_JOBS = 7;
+    const VIEW_RATE = 8;
 
     //business
     const TRANSACTION_FEE = 0.1;
@@ -84,6 +85,13 @@ class Constants {
     const ASSIGNED = 1;
     const COMPLETE = 2;
     const PAID = 3;
+
+    //RATE
+    const RATE_TABLE = "WF_RATE";
+    const RATE_ID = "RATE_ID";
+    const RATER = "RATER";
+    const RATING = "RATING";
+    const RATE_DATE_TIME = "RATE_DATE_TIME";
 
     /*SRC_APP*/
     //SRC MEMBER ACTIONS(DEFAULTS)
