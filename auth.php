@@ -7,8 +7,8 @@ require_once("BusinessManager.php");
 //1627982.ms.wits.ac.za/~student/auth.php?USERNAME=1627982&PASSWORD=mulisa6854727
 function authenticate($user, $password) {
     $ldap = ldap_connect(ServerInfo::LDAP_HOST);
-    ldap_set_option($ldap,LDAP_OPT_PROTOCOL_VERSION,3);
-    ldap_set_option($ldap,LDAP_OPT_REFERRALS,0);
+    ldap_set_option($ldap,LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ldap,LDAP_OPT_REFERRALS, 0);
 
     //auth user
     if($bind = @ldap_bind($ldap, $user, $password)) {

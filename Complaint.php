@@ -9,6 +9,8 @@ header('Access-Control-Allow-Origin: *');
 require_once ("WitsFreelanceDatabaseManager.php");
 
 $db = new WitsFreelanceDatabaseManager();
+$nm = new NotificationManager();
+
 $ACTION = $_REQUEST[Constants::ACTION];
 
 switch ($ACTION){
@@ -21,7 +23,12 @@ switch ($ACTION){
             "CM" => $_REQUEST[Constants::COMPLAINT_MESSAGE]
         );
 
-        $db -> execute($stmt, $args, true);
+        if($db -> execute($stmt, $args, false) != -1){
+            $nm -> sendNotification("1608194", $args["CM"], "COMPLAINT");
+            echo Constants::SUCCESS;
+        }
+        else echo Constants::FAILED;
+
         break;
 
 }
