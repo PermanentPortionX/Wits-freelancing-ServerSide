@@ -112,7 +112,11 @@ body{
         $recipientEmail = $recipientId."@students.wits.ac.za";
         $this -> SM -> sendMail($recipientEmail, $recipientId, $message, $notificationTitle);
     }
-    
+
+    public function sendTransactionNotification($id, $amount, $newAmount, $message) {
+
+    }
+
     public function sendReceipt($employeeId, $employeeAmount, $transactionFee, $total, $employerId, $jobTitle)
     {
 

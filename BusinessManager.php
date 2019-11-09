@@ -72,10 +72,8 @@ class BusinessManager{
                         //TODO: SEND NOTIFICATION
                         $row = $execStmt -> fetch(PDO::FETCH_ASSOC);
                         $newAmount = $row[Constants::FUND_AMOUNT];
-                        $tMessage = ($amount > 0) ? "+".$amount : $amount;
-                        $message = "A transaction took place in your account, the new amount of your account is ".$newAmount." after the transaction ".$tMessage;
-                        $this -> nm -> sendNotification($id, $message, "Transaction notification");
-                        //$this -> nm -> sendTransactionNotification($id, $amount, $newAmount, $message);
+                        $message = "";
+                        $this -> nm -> sendTransactionNotification($id, $amount, $newAmount, $message);
                         return $this -> logTransaction($id, $amount, $reason);
                     }
 

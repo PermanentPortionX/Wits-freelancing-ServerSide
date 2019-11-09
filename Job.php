@@ -115,15 +115,16 @@
                     if ($stmt -> execute($args)){
                         $returnedRow = $stmt -> fetch(PDO::FETCH_ASSOC);
                         $employeeAmount = $returnedRow[Constants::BID_SUGGESTED_AMOUNT];
-                        $transactionFee = $employerAmount * Constants::TRANSACTION_FEE;
+                        $transactionFee = $employeeAmount * Constants::TRANSACTION_FEE;
                         $total = $employeeAmount - $transactionFee;
                         $employerAmount *= -1;
 
                         $reason = "Payment by ".$employerId." for job titled \"".$jobTitle."\"";
-                        if ($bm -> performTransaction($employeeId, $total, $reason) != -1){
+
+                        if ($bm -> performTransaction($employeeId, $employeeAmount, $reason) != -1){
                             $transactionFee *= -1;
                             $transReason = "Transaction fee";
-                            $bm -> performTransaction($employeeId, $total, $transReason);
+                            $bm -> performTransaction($employeeId, $transactionFee, $transReason);
                             //TODO: send notification to both users
                             $nm -> sendReceipt($employeeId, $employeeAmount, $transactionFee, $total, $employerId, $jobTitle);
                             echo Constants::SUCCESS;
@@ -132,7 +133,8 @@
                                 .Constants::PAID." WHERE ".Constants::JOB_ID." = :JID";
                             $db -> execute($stmt, array("JID" => $jobId), false);
 
-                            $employerAmount -= $employeeAmount;
+                            $employerAmount = abs($employerAmount) - abs($employeeAmount);
+                            
                             if ($employerAmount > 0){
                                 $reason = "remaining amount from job titled \"".$jobTitle."\" payment to ".$employeeId;
                                 $bm -> performTransaction($employerId, $employerAmount, $reason);
@@ -175,6 +177,7 @@
                     //TODO: send notification to employer that job is completed
                     echo Constants::SUCCESS;
                 }
+                else echo Constants::FAILED;
             }
             else echo Constants::FAILED;
 
@@ -184,7 +187,26 @@
         case Constants::VIEW_MY_JOBS:
             $myId = $_REQUEST[Constants::JOB_EMPLOYER_ID];
             $stmt = "SELECT * FROM ".Constants::JOB_TABLE." WHERE ".Constants::JOB_EMPLOYER_ID." = :ID ORDER BY ".Constants::JOB_STATUS." ASC";
-            $db -> fetch($stmt, array("ID" => $myId));
+            $execStmt = $db -> getPdo() -> prepare($stmt);
+            if ($execStmt -> execute(array("ID" => $myId))){
+                $results = array();
+
+                while ($row = $execStmt -> fetch(PDO::FETCH_ASSOC)){
+                    $jobId = $row[Constants::JOB_ID];
+                    $stmt = "SELECT COUNT(*) AS NUM_OF_BIDS FROM ".Constants::BID_TABLE." WHERE ".Constants::JOB_ID." = :ID";
+                    $stmt = $db -> getPdo() -> prepare($stmt);
+                    if ($stmt -> execute(array("ID" => $jobId))){
+                        $row["NUM_OF_BIDS"] = $stmt -> fetch(PDO::FETCH_ASSOC)["NUM_OF_BIDS"];
+                    }
+                    else{
+                        $row["NUM_OF_BIDS"] = 0;
+                    }
+                    $results[] = $row;
+                }
+                echo json_encode($results);
+            }
+            else echo json_encode(Constants::DEFAULT_JSON_ARRAY);
+            //$db -> fetch($stmt, array("ID" => $myId));
             break;
 
         case Constants::VIEW_MY_OFFERED_JOBS:

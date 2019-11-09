@@ -93,6 +93,10 @@ class Constants {
     const RATING = "RATING";
     const RATE_DATE_TIME = "RATE_DATE_TIME";
 
+    //Communication With Admin
+    const MESSAGE = "MESSAGE";
+    const SUBJECT = "SUBJECT";
+
     /*SRC_APP*/
     //SRC MEMBER ACTIONS(DEFAULTS)
     const LOG_IN = "login";

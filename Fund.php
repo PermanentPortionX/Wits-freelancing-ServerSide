@@ -8,9 +8,12 @@
     header('Access-Control-Allow-Origin: *');
     require_once("WitsFreelanceDatabaseManager.php");
     require_once("BusinessManager.php");
+    require_once("NotificationManager.php");
 
     $db = new WitsFreelanceDatabaseManager();
     $bm = new BusinessManager();
+    $nm = new NotificationManager();
+
     $ACTION = $_REQUEST[Constants::ACTION];
     $id = $_REQUEST[Constants::FUND_STUD_ID];
 
@@ -19,6 +22,9 @@
             $amount = $_REQUEST[Constants::FUND_AMOUNT];
             $reason = "Deposit";
             $results = $bm -> performTransaction($id, $amount, $reason);
+            if($results != -1){
+                    $nm -> sendNotification($id, $amount." Was successfully deposited in your account", "Money deposit success");
+            }
             echo $results != -1 ? Constants::SUCCESS : Constants::FAILED;
             break;
 

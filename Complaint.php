@@ -7,6 +7,7 @@
  */
 header('Access-Control-Allow-Origin: *');
 require_once ("WitsFreelanceDatabaseManager.php");
+require_once("NotificationManager.php");
 
 $db = new WitsFreelanceDatabaseManager();
 $nm = new NotificationManager();
